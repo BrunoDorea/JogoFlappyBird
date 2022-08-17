@@ -100,7 +100,7 @@ function criaFlappyBird(){
           if(fazColisao(flappyBird, globais.chao)){
             som_HIT.play();
             setTimeout(() => {
-                mudaParaTela(Telas.INICIO)
+                mudaParaTela(Telas.GAME_OVER)
             }, 500)
             return;
           }
@@ -160,8 +160,26 @@ const mensagemGetReady = {
     }
   }
 
-// Canos
+// [mensagemGameOver]
+const mensagemGameOver = {
+    sX: 134,
+    sY: 153,
+    w: 226,
+    h: 200,
+    x: (canvas.width / 2) - 226 / 2,
+    y: 50,
+    desenha() {
+      contexto.drawImage(
+        sprites,
+        mensagemGameOver.sX, mensagemGameOver.sY,
+        mensagemGameOver.w, mensagemGameOver.h,
+        mensagemGameOver.x, mensagemGameOver.y,
+        mensagemGameOver.w, mensagemGameOver.h
+      );
+    }
+  }
 
+// Canos
 function criaCanos() {
     const canos = {
       largura: 52,
@@ -250,6 +268,27 @@ function criaCanos() {
     return canos;
 }
 
+function criaPlacar() {
+    const placar = {
+      pontuacao: 0,
+      desenha() {
+        contexto.font = '35px "VT323"';
+        contexto.textAlign = 'right';
+        contexto.fillStyle = 'white';
+        contexto.fillText(`${placar.pontuacao}`, canvas.width - 10, 35);      
+      },
+      atualiza() {
+        const intervaloDeFrames = 20;
+        const passouOIntervalo = frames % intervaloDeFrames === 0;
+  
+        if(passouOIntervalo) {
+          placar.pontuacao = placar.pontuacao + 1;
+        }
+      }
+    }
+    return placar;
+}
+
 // [Telas]
 const globais = {}
 let telaAtiva = {}
@@ -293,6 +332,7 @@ Telas.JOGO = {
         globais.canos.desenha();
         globais.chao.desenha();
         globais.flappyBird.desenha();
+        globais.placar.desenha();
     },
     click() {
         globais.flappyBird.pular();
@@ -301,8 +341,21 @@ Telas.JOGO = {
         globais.canos.atualiza();
         globais.chao.atualiza();
         globais.flappyBird.atualiza();
+        globais.placar.atualiza();
     }
 }
+
+Telas.GAME_OVER = {
+    desenha() {
+      mensagemGameOver.desenha();
+    },
+    atualiza() {
+      
+    },
+    click() {
+      mudaParaTela(Telas.INICIO);
+    }
+  }
 
 function loop() {
     telaAtiva.desenha();
